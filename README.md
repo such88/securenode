@@ -11,7 +11,7 @@
 | Component   | Version |
 |-------------|---------|
 | Zephyr RTOS | v3.5.0  |
-| Zephyr SDK  | 0.16.5  |
+| Zephyr SDK  | 0.17.0  |
 | Python      | 3.12+   |
 
 ---
