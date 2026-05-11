@@ -1,0 +1,25 @@
+/*
+ * STM32F407 Discovery overlay
+ * LED0  → PD12 (green onboard LED)
+ * UART  → USART2 PA2(TX)/PA3(RX) → /dev/ttyACM0 via ST-Link
+ */
+/ {
+    aliases {
+        led0 = &green_led;
+    };
+
+    leds {
+        compatible = "gpio-leds";
+        green_led: led_0 {
+            gpios = <&gpiod 12 GPIO_ACTIVE_HIGH>;
+            label = "LED0";
+        };
+    };
+};
+
+&usart2 {
+    pinctrl-0 = <&usart2_tx_pa2 &usart2_rx_pa3>;
+    pinctrl-names = "default";
+    current-speed = <115200>;
+    status = "okay";
+};

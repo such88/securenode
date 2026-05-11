@@ -1,0 +1,70 @@
+name: Zephyr CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        board:
+          - name: "stm32f4_disco"
+            label: "STM32F407"
+            toolchain: "arm-zephyr-eabi"
+          - name: "esp32_devkitc_wroom/esp32/procpu"
+            label: "ESP32"
+            toolchain: "xtensa-espressif_esp32_zephyr-elf"
+          - name: "qemu_cortex_m3"
+            label: "QEMU"
+            toolchain: "arm-zephyr-eabi"
+
+    name: Build [${{ matrix.board.label }}]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install West
+        run: pip install west
+
+      - name: Init Zephyr workspace
+        run: |
+          west init ~/zephyrproject --mr v3.5.0
+          cd ~/zephyrproject && west update
+
+      - name: Install Python requirements
+        run: |
+          pip install -r ~/zephyrproject/zephyr/scripts/requirements.txt
+
+      - name: Install Zephyr SDK 0.16.5
+        run: |
+          cd ~
+          wget -q https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.5/zephyr-sdk-0.16.5_linux-x86_64_minimal.tar.xz
+          tar xf zephyr-sdk-0.16.5_linux-x86_64_minimal.tar.xz
+          cd zephyr-sdk-0.16.5
+          ./setup.sh -t ${{ matrix.board.toolchain }} -c
+
+      - name: Build
+        env:
+          ZEPHYR_BASE: /home/runner/zephyrproject/zephyr
+          ZEPHYR_SDK_INSTALL_DIR: /home/runner/zephyr-sdk-0.16.5
+        run: |
+          west build -p auto -b "${{ matrix.board.name }}" .
+
+      - name: Upload ELF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: securenode-${{ matrix.board.label }}
+          path: |
+            build/zephyr/zephyr.elf
+            build/zephyr/zephyr.map

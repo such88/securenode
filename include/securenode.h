@@ -1,0 +1,10 @@
+#ifndef SECURENODE_H
+#define SECURENODE_H
+
+#include <zephyr/kernel.h>
+
+#define SECURENODE_VERSION_MAJOR 1
+#define SECURENODE_VERSION_MINOR 0
+#define SECURENODE_VERSION_PATCH 0
+
+#endif /* SECURENODE_H */

@@ -1,0 +1,22 @@
+# Build output
+build/
+twister-out/
+
+# West workspace (managed separately, not committed)
+.west/
+modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,14 @@
+mainmenu "SecureNode Configuration"
+
+config SECURENODE_BLINK_MS
+    int "LED blink interval (ms)"
+    default 500
+    help
+      Interval between LED toggles in milliseconds.
+
+config SECURENODE_LOG_LEVEL
+    int "Log level (0=OFF 1=ERR 2=WRN 3=INF 4=DBG)"
+    default 3
+    range 0 4
+
+source "Kconfig.zephyr"
