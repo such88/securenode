@@ -33,6 +33,11 @@ securenode/
 ├── scripts/
 │   ├── build.sh                        ← build helper
 │   └── flash.sh                        ← flash helper
+├── not_shipped_LR_GD/
+│   ├── Linear_regression/              ← CGPA vs Package prediction models
+│   ├── matrix/                         ← Matrix operations (inversion)
+│   ├── matrix_mul_perf/                ← Matrix multiplication performance analysis
+│   └── cache_info.txt                  ← Caching details
 ├── .github/workflows/ci.yml            ← GitHub Actions (3 boards)
 ├── CMakeLists.txt                      ← auto-loads overlay + conf
 ├── prj.conf                            ← common Kconfig
@@ -97,6 +102,92 @@ minicom -D /dev/ttyUSB0 -b 115200
 | LED0    | PD12 | Green onboard LED            |
 | UART TX | PA2  | USART2, routed via ST-Link   |
 | UART RX | PA3  | USART2, routed via ST-Link   |
+
+---
+
+## Not Shipped – Research & Experimental Code
+
+The `not_shipped_LR_GD/` directory contains experimental and research-phase code not integrated into the main SecureNode runtime. These modules explore ML prediction models and performance optimization techniques for embedded systems.
+
+### Linear Regression (CGPA vs Package Prediction)
+
+**Location:** `not_shipped_LR_GD/Linear_regression/`
+
+Machine learning module for predicting job package offers based on academic CGPA.
+
+| File                 | Purpose                                          |
+|----------------------|--------------------------------------------------|
+| `gen_cgpa_pkg_data.c` | Generates synthetic CGPA vs package training data with realistic correlation |
+| `gen_cgpa_pkg_data.h` | Data structure definitions (ROW_COUNT, COL_COUNT)            |
+| `single_lr.c`        | Linear regression implementation (slope/intercept calculation) |
+| `placement.csv`      | Sample dataset: CGPA and corresponding package offers         |
+| `Makefile`           | Standalone compilation target                              |
+
+**How it works:**
+- Generates random CGPA values (6.0–10.0) with probabilistic package correlations
+- Calculates mean CGPA and package across dataset
+- Computes linear regression coefficients (slope `m`, intercept `b`)
+- Predicts package = `m × CGPA + b`
+
+**Compile standalone:**
+```bash
+cd not_shipped_LR_GD/Linear_regression
+make
+./single_lr
+```
+
+---
+
+### Matrix Operations
+
+**Location:** `not_shipped_LR_GD/matrix/`
+
+Matrix algebra utilities for linear algebra computations.
+
+| File               | Purpose                          |
+|--------------------|----------------------------------|
+| `matrix_inverse.c` | Matrix inversion implementation  |
+
+Used as a foundation for advanced ML algorithms and numerical methods.
+
+---
+
+### Matrix Multiplication Performance Analysis
+
+**Location:** `not_shipped_LR_GD/matrix_mul_perf/`
+
+Benchmarking and optimization exploration for matrix multiplication on embedded platforms.
+
+| File                  | Purpose                                          |
+|-----------------------|--------------------------------------------------|
+| `matrix_mul_perf.cpp` | C++ performance test harness                     |
+| `matrix_mul.py`       | Python reference implementation for validation   |
+| `types.h`             | Data type definitions for matrices               |
+| `performance_log`     | Logged benchmarks from previous test runs        |
+
+**Use cases:**
+- Benchmarking matrix operations on STM32F407 vs ESP32
+- Evaluating optimization techniques (SIMD, cache locality)
+- Predicting runtime overhead for ML inference
+
+---
+
+### Caching Information
+
+**Location:** `not_shipped_LR_GD/cache_info.txt`
+
+Documents CPU cache characteristics and optimization notes for both target platforms (STM32F407 and ESP32).
+
+---
+
+## Status
+
+These modules are **research-phase** and **not shipped** with the production SecureNode build. They serve as:
+- **Reference implementations** for ML and numerical algorithms
+- **Performance benchmarks** for embedded systems capability assessment
+- **Development sandbox** for future feature prototyping
+
+To integrate components, copy relevant source files to `src/` and update `CMakeLists.txt`.
 
 ### ESP32 DevKitC WROOM
 
