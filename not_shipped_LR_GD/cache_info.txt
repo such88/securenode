@@ -1,0 +1,38 @@
+Cache info:
+L1: 928K
+L2: 6.5M
+L3: 12M
+
+Choosing Block Size (BS)
+This is where performance tuning happens.
+Rule of thumb:
+Fit working set into cache:
+
+3 X BS^2 X sizeof(data_type) <= Cache size (L1 cache size)
+
+=> 3 X BS^2 X 8(double) <= 928K
+=> 3 X BS^2 X 8(double) <= 928 X 2 ^10
+=> BS^2 <= 58 X 2 ^10
+=> BS <= 7.61 X 2^5
+BS is too huge
+
+Then why do we often use BS = 32? Because the formula is idealized, but real CPUs are messy.
+Cache is NOT fully available, L1 cache (32KB) is shared by:
+Stack, Other variables, Instructions, Prefetch buffers
+> You can’t use full 32KB for matrices
+Firmware-style intuition, Think of it like: Theoretical SRAM = 928KB, Usable SRAM = ~50–70%
+
+Cache associativity & conflicts, Even if size fits:
+Cache lines may conflict, Data may get evicted early.
+Safer to use smaller blocks.
+
+SIMD alignment, Modern CPUs prefer: 8, 16, 32 multiples
+32 aligns well with:
+AVX (256-bit)
+NEON
+
+Real implementations: Further break BS into smaller tiles (e.g., 4×4 in registers)
+So: Outer block ≠ actual compute tile
+
+high-performance code uses:
+"fit comfortably in cache" > "fit exactly in cache"
